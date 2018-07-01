@@ -21,11 +21,14 @@ end
 class LinkedList
   include Enumerable
 
+  attr_reader :length
+
   def initialize
     @head = Node.new
     @tail = Node.new
     @head.next = @tail
     @tail.prev = @head
+    @length = 0
   end
 
   def [](i)
@@ -67,6 +70,17 @@ class LinkedList
     node.prev = last
     last.next = node
     @tail.prev = node
+    @length += 1
+    node
+  end
+
+  def move_to_end(node)
+    node.prev.next = node.next
+    node.next.prev = node.prev
+    node.next = @tail
+    node.prev = last
+    last.next = node
+    @tail.prev = node
   end
 
   def update(key, val)
@@ -77,7 +91,10 @@ class LinkedList
 
   def remove(key)
     each do |node|
-      node.remove if node.key == key
+      if node.key == key
+        node.remove
+        @length -= 1
+      end
     end
   end
 
@@ -90,8 +107,7 @@ class LinkedList
     end
   end
 
-  # uncomment when you have `each` working and `Enumerable` included
-  # def to_s
-  #   inject([]) { |acc, link| acc << "[#{link.key}, #{link.val}]" }.join(", ")
-  # end
+  def to_s
+    inject([]) { |acc, link| acc << "[#{link.key}, #{link.val}]" }.join(", ")
+  end
 end

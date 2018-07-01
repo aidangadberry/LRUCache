@@ -54,7 +54,7 @@ class HashMap
 
   alias_method :[], :get
   alias_method :[]=, :set
-  # alias_method :inspect, :to_s
+  alias_method :inspect, :to_s
 
   private
 

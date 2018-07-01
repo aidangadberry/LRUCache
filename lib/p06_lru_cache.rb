@@ -3,6 +3,7 @@ require_relative 'p04_linked_list'
 
 class LRUCache
   attr_reader :count
+
   def initialize(max, prc)
     @map = HashMap.new
     @store = LinkedList.new
@@ -15,22 +16,44 @@ class LRUCache
   end
 
   def get(key)
+    if @map.get(key)
+      update_node!(@map[key])
+    else
+      calc!(key)
+    end
+    @map[key].val
   end
 
   def to_s
-    'Map: ' + @map.to_s + '\n' + 'Store: ' + @store.to_s
+    'Map: ' + @map.to_s + "\n" + 'Store: ' + @store.to_s
   end
 
   private
 
   def calc!(key)
-    # suggested helper method; insert an (un-cached) key
+    eject! if @store.length == @max
+    node = @store.append(key, @prc.call(key))
+    @map.set(key, node)
   end
 
   def update_node!(node)
-    # suggested helper method; move a node to the end of the list
+    @store.move_to_end(node)
   end
 
   def eject!
+    @map[@store.first.key] = nil
+    @store.remove(@store.first.key)
   end
+end
+
+if $PROGRAM_NAME == __FILE__
+  lru = LRUCache.new(3, Proc.new { |i| i ** 2 })
+  lru.get(1)
+  lru.get(2)
+  lru.get(4)
+  lru.get(2)
+  lru.get(5)
+  lru.get(4)
+  lru.get(3)
+  puts lru
 end
